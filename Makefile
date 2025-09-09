@@ -11,9 +11,24 @@ all: build test vet lint fmt
 .PHONY: build
 build: clean bin/terraform-provider-instana
 
+install: build copy
+
 bin/terraform-provider-instana:
 	@echo "+++++++++++  Run GO Build +++++++++++ "
-	@go build -o $@ github.com/instana/terraform-provider-instana
+	@go build -o $@ github.com/gessnerfl/terraform-provider-instana
+
+copy:
+	@echo "+++++++++++  Copy binary to local terraform plugins folder +++++++++++ "
+	mkdir -p ~/.terraform.d/plugins/terraform.local/local/instana/1.0.0/darwin_arm64
+	cp bin/terraform-provider-instana ~/.terraform.d/plugins/terraform.local/local/instana/1.0.0/darwin_arm64/terraform-provider-instana_v1.0.0
+	@echo "\n+++++++++++  Plugin installed +++++++++++ "
+	@echo "The plugin can now be used by adding the following provider block to your terraform configuration:"
+	@echo "  required_providers {"
+	@echo "    instana = {"
+	@echo "      source  = \"terraform.local/local/instana\""
+	@echo "      version = \"1.0.0\""
+	@echo "    }"
+	@echo "  }"
 
 .PHONY: test
 test:
